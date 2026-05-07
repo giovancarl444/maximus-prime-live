@@ -1,0 +1,119 @@
+{
+  "agent": "Maximus Prime",
+  "version": "0.13.0",
+  "version_date": "2026.5.7",
+  "last_sync": "2026-05-07T03:59:53.398906+00:00",
+  "commits_ahead": 0,
+  "status": "ultra-mode-active",
+  "gateway": {
+    "status": "running",
+    "pid": 87003,
+    "mode": "auto"
+  },
+  "tools": 22,
+  "skills": 103,
+  "backup": {
+    "last": "1999-10-23T19:44:00+00:00",
+    "size": "912M",
+    "path": "~/maximus-prime-backups/maximus-prime-2026-05-01_225828.tar.gz"
+  },
+  "cron_active": 9,
+  "kanban_status": {
+    "initialized": true,
+    "cards_total": 6,
+    "cards_ready": 6,
+    "boards": [
+      "intelligence",
+      "builds",
+      "social",
+      "evolution"
+    ],
+    "mission_control": "t_d097f4dc"
+  },
+  "goals": {
+    "standing": "Initialize Maximus Prime Kanban Mission Control and wire all cron agents to produce durable task cards on every cycle"
+  },
+  "self_evolution": {
+    "last_run": "2026-05-01T23:02:27.752347",
+    "status": "operational",
+    "cron_monitoring": {
+      "jobs_analyzed": 9,
+      "errors_found": 133,
+      "root_cause_cards_created": 0,
+      "skill_improvements_proposed": 0,
+      "last_patterns": [
+        {
+          "job": "daily-intel-digest",
+          "pattern": "network-timeout",
+          "count": 4
+        },
+        {
+          "job": "daily-intel-digest",
+          "pattern": "uncategorized",
+          "count": 1
+        },
+        {
+          "job": "MIDAS Heartbeat Agent",
+          "pattern": "git-operation-failure",
+          "count": 98
+        },
+        {
+          "job": "MIDAS Heartbeat Agent",
+          "pattern": "network-timeout",
+          "count": 14
+        },
+        {
+          "job": "MIDAS Heartbeat Agent",
+          "pattern": "uncategorized",
+          "count": 1
+        },
+        {
+          "job": "MIDAS Morning Brief v2.0",
+          "pattern": "network-timeout",
+          "count": 4
+        },
+        {
+          "job": "MIDAS Morning Brief v2.0",
+          "pattern": "uncategorized",
+          "count": 2
+        },
+        {
+          "job": "MIDAS Voice Brief v1.0",
+          "pattern": "uncategorized",
+          "count": 1
+        },
+        {
+          "job": "ADELE Deep Research Agent v0.1",
+          "pattern": "uncategorized",
+          "count": 1
+        },
+        {
+          "job": "ADELE Deep Research Agent v0.1",
+          "pattern": "network-timeout",
+          "count": 1
+        },
+        {
+          "job": "continuous-evolution-pipeline",
+          "pattern": "uncategorized",
+          "count": 5
+        },
+        {
+          "job": "continuous-evolution-pipeline",
+          "pattern": "git-operation-failure",
+          "count": 1
+        }
+      ]
+    },
+    "last_cron_run": "2026-05-01T23:02:58.071476",
+    "last_result": "success",
+    "cron_enabled": true
+  },
+  "agents": {
+    "self_evolution_cron": {
+      "last_run": "2026-05-01T23:02:58.071670",
+      "status": "ran",
+      "mode": "feedback_loop"
+    }
+  },
+  "updated_at": "2026-05-07T03:59:53.882265+00:00"
+}

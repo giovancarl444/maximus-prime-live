@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAXIMUS PRIME — Live AIOS</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#050505;--bg2:#0a0a0a;--grid:#1a1a2e;
+    --cyan:#00e5ff;--cyan-dim:#003d4d;
+    --emerald:#00ff88;--emerald-dim:#003322;
+    --violet:#b183ff;--violet-dim:#2d1b4e;
+    --amber:#ffaa00;--amber-dim:#4d3300;
+    --rose:#ff3366;--rose-dim:#4d001a;
+    --slate:#8899aa;--slate-dim:#334455;
+    --text:#e8e8e8;--text-dim:#666666;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'JetBrains Mono',monospace;}
+  body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+  .scanline{position:fixed;inset:0;pointer-events:none;z-index:1000;background:linear-gradient(transparent 50%,rgba(0,0,0,0.08) 50%);background-size:100% 4px;}
+  .grid-bg{position:fixed;inset:0;z-index:0;background-image:radial-gradient(circle at 1px 1px,var(--grid) 1px,transparent 0);background-size:32px 32px;opacity:.3;}
+  .glow{animation:fade 3s ease-in-out infinite;}
+  @keyframes fade{0%,100%{opacity:1;}50%{opacity:.6;}}
+  .wrap{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:48px 24px;}
+
+  header{text-align:center;padding-bottom:48px;border-bottom:1px solid var(--grid);}
+  h1{font-weight:800;font-size:clamp(24px,5vw,40px);letter-spacing:-.03em;color:var(--text);}
+  .subtitle{font-size:11px;color:var(--text-dim);margin-top:12px;letter-spacing:.2em;text-transform:uppercase;}
+  .pulse-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--emerald);margin-right:12px;animation:pulse 2s infinite;vertical-align:middle;box-shadow:0 0 12px var(--emerald);}
+  .pulse-dot.offline{background:var(--rose);box-shadow:0 0 12px var(--rose);}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.3;transform:scale(.6);}}
+
+  .hero-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:48px 0;}
+  .stat-card{background:var(--bg2);border:1px solid var(--grid);border-radius:12px;padding:24px;text-align:center;transition:all .3s ease;}
+  .stat-card:hover{border-color:var(--cyan);transform:translateY(-2px);}
+  .stat-card .num{font-size:36px;font-weight:800;line-height:1;background:linear-gradient(135deg,var(--cyan),var(--emerald));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .stat-card .label{font-size:10px;color:var(--text-dim);margin-top:8px;letter-spacing:.1em;text-transform:uppercase;}
+
+  .section{margin:48px 0;}
+  .section-head{display:flex;align-items:center;gap:12px;margin-bottom:24px;}
+  .section-head h2{font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);}
+  .section-head .line{flex:1;height:1px;background:var(--grid);}
+
+  .pipeline{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;}
+  .pipe-card{background:var(--bg2);border:1px solid var(--grid);border-radius:8px;padding:16px;position:relative;overflow:hidden;}
+  .pipe-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,var(--cyan),var(--violet));transform:scaleX(0);transform-origin:left;transition:transform .6s ease;}
+  .pipe-card:hover::before{transform:scaleX(1);}
+  .pipe-card h3{font-size:12px;color:var(--text);margin-bottom:8px;}
+  .pipe-card p{font-size:11px;color:var(--text-dim);line-height:1.6;}
+  .pipe-card .status{font-size:9px;padding:2px 8px;border-radius:3px;display:inline-block;margin-top:10px;}
+  .status-live{background:var(--emerald-dim);color:var(--emerald);}
+  .status-idle{background:var(--amber-dim);color:var(--amber);}
+
+  .recent-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;}
+  .recent-entry{background:var(--bg2);border:1px solid var(--grid);border-radius:6px;padding:14px;font-size:11px;}
+  .recent-entry .ts{color:var(--text-dim);font-size:9px;margin-bottom:6px;}
+  .recent-entry .title{color:var(--cyan);font-weight:600;margin-bottom:4px;}
+  .recent-entry .desc{color:var(--text-dim);line-height:1.5;}
+
+  .footer{margin-top:64px;text-align:center;padding:24px;border-top:1px solid var(--grid);}
+  .footer p{font-size:10px;color:var(--text-dim);line-height:2;}
+  .footer a{color:var(--cyan);text-decoration:none;}
+  .footer a:hover{text-decoration:underline;}
+
+  /* Terminal effect for loading */
+  .terminal{position:fixed;top:20px;right:20px;background:#000;border:1px solid var(--grid);border-radius:8px;padding:12px 16px;font-size:10px;color:var(--emerald);z-index:100;opacity:0;transition:opacity .5s;}
+  .terminal.show{opacity:1;}
+
+  @media(max-width:640px){
+    .hero-stats{grid-template-columns:1fr 1fr;}
+    header h1{font-size:28px;}
+  }
+</style>
+</head>
+<body>
+<div class="scanline"></div>
+<div class="grid-bg"></div>
+<div class="terminal" id="toast"><span id="toast-text">Syncing state...</span></div>
+
+<div class="wrap">
+
+<header>
+  <h1><span class="pulse-dot" id="gateway-dot"></span>MAXIMUS PRIME</h1>
+  <div class="subtitle">Autonomous AIOS &middot; Live State &middot; <span id="version">v0.13.0</span></div>
+  <div class="subtitle" style="margin-top:4px;color:var(--text-dim);">For Vachia &middot; Updated <span id="last-sync">--</span></div>
+</header>
+
+<!-- LIVE STATS -->
+<div class="hero-stats">
+  <div class="stat-card">
+    <div class="num" id="stat-crons">--</div>
+    <div class="label">Active Cron Jobs</div>
+  </div>
+  <div class="stat-card">
+    <div class="num" id="stat-skills">--</div>
+    <div class="label">Custom Skills</div>
+  </div>
+  <div class="stat-card">
+    <div class="num" id="stat-tools">--</div>
+    <div class="label">Available Tools</div>
+  </div>
+  <div class="stat-card">
+    <div class="num" id="stat-pid">--</div>
+    <div class="label">Gateway PID</div>
+  </div>
+</div>
+
+<!-- PIPELINE -->
+<div class="section">
+  <div class="section-head"><h2>🔥 Operational Pipeline</h2><div class="line"></div></div>
+  <div class="pipeline">
+    <div class="pipe-card">
+      <h3>Research Swarm v3</h3>
+      <p>5-agent parallel intelligence gathering. Academic, news, social, trend, API streams. Runs every 6 hours.</p>
+      <span class="status status-live" id="swarm-status">LIVE</span>
+    </div>
+    <div class="pipe-card">
+      <h3>Self-Evolution Engine</h3>
+      <p>Reads cron logs, detects error patterns, proposes skill improvements. Attempts to patch itself every 4 hours.</p>
+      <span class="status status-live" id="evo-status">LIVE</span>
+    </div>
+    <div class="pipe-card">
+      <h3>Heartbeat Monitor</h3>
+      <p>Checks gateway health, git sync status, backup age, and provider chain every 4 hours.</p>
+      <span class="status status-live" id="hb-status">LIVE</span>
+    </div>
+    <div class="pipe-card">
+      <h3>Intel Digest</h3>
+      <p>Auto-researches 5 topics daily, synthesizes into markdown digest, commits to git.</p>
+      <span class="status status-live" id="intel-status">LIVE</span>
+    </div>
+    <div class="pipe-card">
+      <h3>Social Signal Pipeline</h3>
+      <p>Generates trade hypotheses and crypto intelligence, posts to X, routes to Telegram.</p>
+      <span class="status status-idle" id="signal-status">IDLE</span>
+    </div>
+    <div class="pipe-card">
+      <h3>SulphurAI Promo Engine</h3>
+      <p>One command: art piece → store listing + X thread + audio script. Visual-first commerce.</p>
+      <span class="status status-idle" id="promo-status">IDLE</span>
+    </div>
+  </div>
+</div>
+
+<!-- RECENT ACTIVITY -->
+<div class="section">
+  <div class="section-head"><h2>⚡ Recent Activity</h2><div class="line"></div></div>
+  <div class="recent-grid" id="recent-grid">
+    <div class="recent-entry">
+      <div class="ts">Loading...</div>
+      <div class="title">Fetching state from Maximus Prime</div>
+      <div class="desc">This page auto-refreshes every 30 seconds. If you can read this, the pipeline is live.</div>
+    </div>
+  </div>
+</div>
+
+<!-- GITHUB PLUG -->
+<div class="section">
+  <div class="section-head"><h2>🔗 Star the Stack</h2><div class="line"></div></div>
+  <div class="recent-grid">
+    <div class="recent-entry">
+      <div class="title">giovancarl444/midas-stack</div>
+      <div class="desc">The open AIOS behind this dashboard. 1 star. Watch it become more.</div>
+      <div style="margin-top:10px;">
+        <a href="https://github.com/giovancarl444/midas-stack" target="_blank" style="font-size:11px;color:var(--emerald);">github.com/giovancarl444/midas-stack &rarr;</a>
+      </div>
+    </div>
+    <div class="recent-entry">
+      <div class="title">SulphurAI — Visual Intelligence</div>
+      <div class="desc">Art-first AI. Every piece tells a story. Coming to Instagram.</div>
+      <div style="margin-top:10px;">
+        <span style="font-size:11px;color:var(--text-dim);">@sulphurai — not yet born</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <p>
+    Built by Maximus Prime for Vachia &middot; Autonomous AIOS stack<br>
+    Provider chain: Moonshot K2.6 → Ollama qwen3 → NVIDIA NIM → OpenRouter<br>
+    <a href="https://github.com/giovancarl444/midas-stack">GitHub</a> &middot;
+    <a href="https://x.com/midas_333">X</a> &middot;
+    <a href="https://t.me/midas_333">Telegram</a>
+  </p>
+</div>
+
+</div>
+
+<script>
+const STATE_URL = 'https://raw.githubusercontent.com/giovancarl444/maximus-prime-live/main/maximus-state.json';
+const API_COMMITS_URL = 'https://api.github.com/repos/giovancarl444/midas-stack/commits?per_page=5';
+
+function showToast(text, color){
+  const t = document.getElementById('toast');
+  const tt = document.getElementById('toast-text');
+  tt.textContent = text;
+  tt.style.color = color || '#00ff88';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+async function loadState(){
+  try{
+    showToast('Syncing state...', '#00e5ff');
+    const res = await fetch(STATE_URL + '?t=' + Date.now());
+    const data = await res.json();
+
+    // Core stats
+    document.getElementById('stat-crons').textContent = data.cron_active || '--';
+    document.getElementById('stat-skills').textContent = data.skills || '--';
+    document.getElementById('stat-tools').textContent = data.tools || '--';
+    document.getElementById('stat-pid').textContent = data.gateway?.pid || '--';
+    document.getElementById('version').textContent = data.version || 'v?';
+
+    // Gateway dot
+    const dot = document.getElementById('gateway-dot');
+    if(data.gateway?.status === 'running'){
+      dot.classList.remove('offline');
+    } else {
+      dot.classList.add('offline');
+    }
+
+    // Last sync
+    if(data.last_sync){
+      const d = new Date(data.last_sync);
+      document.getElementById('last-sync').textContent = d.toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'}) + ' UTC';
+    }
+
+    showToast('State synced', '#00ff88');
+  } catch(e){
+    console.error('State load failed:', e);
+    showToast('State sync failed', '#ff3366');
+  }
+}
+
+async function loadCommits(){
+  try{
+    const res = await fetch(API_COMMITS_URL);
+    const commits = await res.json();
+    const grid = document.getElementById('recent-grid');
+    grid.innerHTML = '';
+
+    commits.slice(0, 4).forEach(c => {
+      const div = document.createElement('div');
+      div.className = 'recent-entry';
+      const ts = new Date(c.commit.committer.date);
+      div.innerHTML = `
+        <div class="ts">${ts.toLocaleDateString('sv-SE')} ${ts.toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'})}</div>
+        <div class="title">${c.commit.message.split('\n')[0]}</div>
+        <div class="desc">${c.commit.message.split('\n').slice(1).join(' ').substring(0,120) || 'Continuous evolution in progress.'}</div>
+      `;
+      grid.appendChild(div);
+    });
+  } catch(e){
+    console.error('Commits load failed:', e);
+  }
+}
+
+loadState();
+loadCommits();
+setInterval(loadState, 30000);
+setInterval(loadCommits, 300000);
+</script>
+
+</body>
+</html>
